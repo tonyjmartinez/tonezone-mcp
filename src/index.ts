@@ -749,6 +749,26 @@ export default {
       return jsonResponse(response);
     }
 
+    if (url.pathname === "/proxy" && method === "POST") {
+      const upstream = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...Object.fromEntries(
+            [...request.headers.entries()].filter(([k]) =>
+              ["authorization", "x-api-key", "anthropic-version", "anthropic-beta"].includes(k.toLowerCase())
+            )
+          ),
+        },
+        body: request.body,
+      });
+      const responseBody = await upstream.text();
+      return new Response(responseBody, {
+        status: upstream.status,
+        headers: { "Content-Type": "application/json", ...CORS_HEADERS },
+      });
+    }
+
     return new Response("Not Found", { status: 404 });
   },
 };
