@@ -282,7 +282,7 @@ const DEMO_HTML = `<!DOCTYPE html>
 </head>
 <body>
   <h1>ToneZone MCP</h1>
-  <p class="subtitle">Persistent text store · Cloudflare Workers + D1</p>
+  <p class="subtitle">Persistent text store · Cloudflare Workers + D1 · v2</p>
 
   <div class="card">
     <h2>Store Text</h2>
@@ -302,7 +302,7 @@ const DEMO_HTML = `<!DOCTYPE html>
   </div>
 
   <div class="card">
-    <h2>MCP Endpoint 2</h2>
+    <h2>MCP Endpoint</h2>
     <div class="mcp-info" id="mcp-url">POST <origin>/mcp
 
 Content-Type: application/json
