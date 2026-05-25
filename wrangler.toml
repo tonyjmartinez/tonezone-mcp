@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "tonezone-store"
-database_id = "placeholder-replace-after-db-create"
+database_id = "f829b81c-7889-40dc-b31f-a38fb7922e0a"
 
 [vars]
 ENVIRONMENT = "production"
