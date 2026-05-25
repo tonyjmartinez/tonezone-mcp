@@ -1,5 +1,6 @@
 export interface Env {
   DB: D1Database;
+  API_KEY: string;
 }
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -23,6 +24,18 @@ interface JsonRpcResponse {
   id: string | number | null;
   result?: unknown;
   error?: { code: number; message: string };
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+function isAuthorized(request: Request, apiKey: string): boolean {
+  const auth = request.headers.get("Authorization") ?? "";
+  const key = request.headers.get("X-Api-Key") ?? "";
+  return auth === `Bearer ${apiKey}` || key === apiKey;
+}
+
+function unauthorized(origin: string): Response {
+  return jsonResponse({ error: "Unauthorized" }, 401, origin);
 }
 
 // ─── CORS headers ─────────────────────────────────────────────────────────────
@@ -283,6 +296,15 @@ const DEMO_HTML = `<!DOCTYPE html>
 <body>
   <h1>ToneZone MCP</h1>
   <p class="subtitle">Persistent text store · Cloudflare Workers + D1</p>
+
+  <div class="card">
+    <h2>API Key</h2>
+    <div class="row">
+      <input id="api-key-input" type="password" placeholder="Enter your API key…" />
+      <button onclick="saveKey()">Save</button>
+    </div>
+    <div id="key-status"></div>
+  </div>
 
   <div class="card">
     <h2>Store Text</h2>
