@@ -1,5 +1,6 @@
 export interface Env {
   DB: D1Database;
+  ANTHROPIC_API_KEY: string;
 }
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -754,11 +755,9 @@ export default {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...Object.fromEntries(
-            [...request.headers.entries()].filter(([k]) =>
-              ["authorization", "x-api-key", "anthropic-version", "anthropic-beta"].includes(k.toLowerCase())
-            )
-          ),
+          "x-api-key": env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-beta": "mcp-client-2025-04-04",
         },
         body: request.body,
       });
