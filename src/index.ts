@@ -28,19 +28,17 @@ interface JsonRpcResponse {
 
 // ─── CORS headers ─────────────────────────────────────────────────────────────
 
-function cors(origin: string): HeadersInit {
-  return {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept",
-    "Access-Control-Max-Age": "86400",
-  };
-}
+const CORS_HEADERS: HeadersInit = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept",
+  "Access-Control-Max-Age": "86400",
+};
 
-function jsonResponse(body: unknown, status = 200, origin = "*"): Response {
+function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", ...cors(origin) },
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS },
   });
 }
 
@@ -472,12 +470,11 @@ const DEMO_HTML = `<!DOCTYPE html>
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    const origin = request.headers.get("Origin") ?? "*";
     const method = request.method.toUpperCase();
 
     // Preflight
     if (method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: cors(origin) });
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
     // ── Demo page ──
@@ -492,7 +489,7 @@ export default {
       const ns = sanitizeNs(url.searchParams.get("ns"));
       const limit = Math.min(Number(url.searchParams.get("limit") ?? 50), 100);
       const entries = await getEntries(env.DB, ns, limit);
-      return jsonResponse(entries, 200, origin);
+      return jsonResponse(entries, 200);
     }
 
     if (url.pathname === "/api/entries" && method === "POST") {
@@ -500,20 +497,20 @@ export default {
       try {
         body = await request.json();
       } catch {
-        return jsonResponse({ error: "Invalid JSON" }, 400, origin);
+        return jsonResponse({ error: "Invalid JSON" }, 400);
       }
-      if (!body.text) return jsonResponse({ error: "text is required" }, 400, origin);
+      if (!body.text) return jsonResponse({ error: "text is required" }, 400);
       const ns = sanitizeNs(body.namespace);
       const entry = await storeEntry(env.DB, ns, body.text, body.label);
-      return jsonResponse(entry, 201, origin);
+      return jsonResponse(entry, 201);
     }
 
     if (url.pathname.startsWith("/api/entries/") && method === "DELETE") {
       const id = Number(url.pathname.split("/").pop());
       const ns = sanitizeNs(url.searchParams.get("ns"));
-      if (!id) return jsonResponse({ error: "invalid id" }, 400, origin);
+      if (!id) return jsonResponse({ error: "invalid id" }, 400);
       const deleted = await deleteEntry(env.DB, ns, id);
-      return jsonResponse({ deleted }, deleted ? 200 : 404, origin);
+      return jsonResponse({ deleted }, deleted ? 200 : 404);
     }
 
     // ── MCP endpoint ──
@@ -522,10 +519,10 @@ export default {
       try {
         body = await request.json();
       } catch {
-        return jsonResponse({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }, 400, origin);
+        return jsonResponse({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }, 400);
       }
       const response = await handleMcp(body, env.DB);
-      return jsonResponse(response, 200, origin);
+      return jsonResponse(response, 200);
     }
 
     return new Response("Not Found", { status: 404 });
