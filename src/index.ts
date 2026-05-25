@@ -192,97 +192,145 @@ const DEMO_HTML = `<!DOCTYPE html>
   <title>ToneZone MCP — Demo</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      background: #0f0f13;
+      background: #09090e;
       color: #e8e8f0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem 1rem;
+      padding: 2.5rem 1rem;
     }
-    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: .25rem; }
-    .subtitle { color: #888; font-size: .9rem; margin-bottom: 2rem; }
+    .hero { text-align: center; margin-bottom: 2.5rem; animation: fadeIn .4s ease; }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 60%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .35rem;
+    }
+    .subtitle { color: #666; font-size: .875rem; }
+    .subtitle strong { color: #888; font-weight: 500; }
     .card {
-      background: #1a1a24;
-      border: 1px solid #2a2a3a;
-      border-radius: 12px;
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      border-radius: 14px;
       padding: 1.5rem;
       width: 100%;
       max-width: 640px;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
+      animation: fadeIn .35s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,.4);
     }
-    h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #a0a0c0; }
+    .card:hover { border-color: #2a2a40; }
+    h2 {
+      font-size: .8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 1rem;
+      color: #555577;
+    }
     .row { display: flex; gap: .75rem; margin-bottom: .75rem; }
     input[type="text"] {
       flex: 1;
-      background: #0f0f18;
-      border: 1px solid #2a2a3a;
+      background: #0a0a12;
+      border: 1px solid #1e1e2e;
       border-radius: 8px;
       color: #e8e8f0;
       font-size: .9rem;
-      padding: .6rem .9rem;
+      padding: .65rem 1rem;
       outline: none;
+      transition: border-color .15s, box-shadow .15s;
     }
-    input[type="text"]:focus { border-color: #5555ee; }
+    input[type="text"]:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124,58,237,.15);
+    }
     button {
-      background: #4444dd;
+      background: linear-gradient(135deg, #6d28d9, #4f46e5);
       border: none;
       border-radius: 8px;
       color: #fff;
       cursor: pointer;
       font-size: .85rem;
       font-weight: 600;
-      padding: .6rem 1.1rem;
-      transition: background .15s;
+      padding: .65rem 1.25rem;
+      transition: opacity .15s, transform .1s, box-shadow .15s;
+      box-shadow: 0 2px 8px rgba(109,40,217,.35);
     }
-    button:hover { background: #5555ee; }
-    button.danger { background: #882222; }
-    button.danger:hover { background: #aa3333; }
-    button.small { font-size: .75rem; padding: .35rem .7rem; }
-    #status { font-size: .8rem; color: #888; margin-top: .5rem; min-height: 1.2em; }
-    #status.ok { color: #44cc88; }
-    #status.err { color: #ee4444; }
+    button:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(109,40,217,.45); }
+    button:active { transform: translateY(0); }
+    button.danger {
+      background: linear-gradient(135deg, #7f1d1d, #991b1b);
+      box-shadow: 0 2px 8px rgba(153,27,27,.3);
+    }
+    button.danger:hover { box-shadow: 0 4px 14px rgba(153,27,27,.4); }
+    button.small { font-size: .72rem; padding: .3rem .65rem; box-shadow: none; }
+    #status { font-size: .8rem; color: #555; margin-top: .5rem; min-height: 1.2em; }
+    #status.ok { color: #34d399; }
+    #status.err { color: #f87171; }
     #entries { list-style: none; }
     #entries li {
       display: flex;
       align-items: flex-start;
       gap: .75rem;
-      padding: .75rem 0;
-      border-bottom: 1px solid #22223a;
+      padding: .8rem 0;
+      border-bottom: 1px solid #16161f;
     }
     #entries li:last-child { border-bottom: none; }
-    .entry-id { color: #555; font-size: .75rem; min-width: 2rem; padding-top: .1rem; }
+    .entry-id { color: #333355; font-size: .72rem; min-width: 2rem; padding-top: .15rem; font-variant-numeric: tabular-nums; }
     .entry-body { flex: 1; }
-    .entry-text { font-size: .95rem; word-break: break-word; }
-    .entry-meta { color: #666; font-size: .75rem; margin-top: .2rem; }
-    .empty { color: #555; text-align: center; padding: 1rem 0; font-size: .9rem; }
+    .entry-text { font-size: .92rem; word-break: break-word; color: #d0d0e8; }
+    .entry-meta { color: #444466; font-size: .72rem; margin-top: .25rem; }
+    .empty { color: #333355; text-align: center; padding: 1.5rem 0; font-size: .88rem; }
     .mcp-info {
-      background: #0f0f18;
-      border: 1px solid #2a2a3a;
+      background: #0a0a12;
+      border: 1px solid #1e1e2e;
       border-radius: 8px;
       padding: 1rem;
       font-family: monospace;
-      font-size: .8rem;
-      color: #a0a0c0;
+      font-size: .78rem;
+      color: #5555aa;
       white-space: pre-wrap;
       word-break: break-all;
+      line-height: 1.6;
     }
+    .mcp-info .method { color: #a78bfa; }
     .tag {
       display: inline-block;
-      background: #2a2a4a;
+      background: #1e1040;
       border-radius: 4px;
-      font-size: .7rem;
-      padding: .15rem .4rem;
-      color: #8888cc;
+      font-size: .68rem;
+      padding: .15rem .45rem;
+      color: #7c5fe6;
       margin-right: .4rem;
+      font-weight: 500;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: #34d399;
+      border-radius: 50%;
+      margin-right: .45rem;
+      vertical-align: middle;
+      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 6px #34d399;
     }
   </style>
 </head>
 <body>
-  <h1>ToneZone MCP</h1>
-  <p class="subtitle">Persistent text store · Cloudflare Workers + D1</p>
+  <div class="hero">
+    <h1>ToneZone MCP</h1>
+    <p class="subtitle">Persistent text store &nbsp;·&nbsp; <strong>Cloudflare Workers + D1</strong></p>
+  </div>
 
   <div class="card">
     <h2>Store Text</h2>
@@ -297,12 +345,12 @@ const DEMO_HTML = `<!DOCTYPE html>
   </div>
 
   <div class="card">
-    <h2>Stored Entries <button class="small" onclick="loadEntries()">Refresh</button></h2>
+    <h2>Stored Entries <button class="small" onclick="loadEntries()" style="margin-left:.5rem">↻ Refresh</button></h2>
     <ul id="entries"><li class="empty">Loading…</li></ul>
   </div>
 
   <div class="card">
-    <h2>MCP Endpoint</h2>
+    <h2><span class="live-dot"></span>MCP Endpoint</h2>
     <div class="mcp-info" id="mcp-url">POST <origin>/mcp
 
 Content-Type: application/json
