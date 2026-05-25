@@ -189,7 +189,7 @@ const DEMO_HTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ToneZone MCP — Demo</title>
+  <title>ToneZone MCP — Demo v2</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
