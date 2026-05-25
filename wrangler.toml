@@ -1,0 +1,12 @@
+name = "tonezone-mcp"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tonezone-store"
+database_id = "placeholder-replace-after-db-create"
+
+[vars]
+ENVIRONMENT = "production"
