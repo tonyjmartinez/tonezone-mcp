@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS entries (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  text TEXT NOT NULL,
+  label TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
